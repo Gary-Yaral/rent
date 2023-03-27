@@ -46,7 +46,8 @@ public class HouseDAO {
 		List<House> list = new ArrayList<House>();
 		
 		try {
-			TypedQuery<House> query = em.createQuery("SELECT h FROM House h", House.class);
+			TypedQuery<House> query = em.createQuery("SELECT h FROM House h WHERE h.status = :status", House.class);
+			query.setParameter("status", "DISPONIBLE");
 			list = query.getResultList();	
 			for(House house : list) {
 				List<String> urls = new ArrayList<String>();
@@ -68,6 +69,33 @@ public class HouseDAO {
 			
 		} catch(Exception e) {
 			System.out.println("Error al obtener todas las casas");
+		}
+		
+		return data;
+		
+	}
+	
+	public HouseRender getOneHouseData(long house_id) {
+		HouseRender data = new HouseRender();		
+		try {
+			TypedQuery<House> query = em.createQuery("SELECT h FROM House h WHERE h.id = :house_id", House.class);
+			query.setParameter("house_id", house_id);
+			House house  = query.getSingleResult();
+			data.setHouse(house);
+			List<String> list = new ArrayList<String>();
+			
+			TypedQuery<Images> q = em.createQuery("SELECT i FROM Images i WHERE i.house.id = :house_id", Images.class);
+			q.setParameter("house_id", house.getId());
+			List<Images> images = q.getResultList();
+			for(Images img: images) {
+				list.add(img.getName());
+			}
+			
+			data.setUser(house.getUser());
+			data.setUrls(list);
+			
+		} catch(Exception e) {
+			System.out.println("Error al obtener datos de la casa");
 		}
 		
 		return data;

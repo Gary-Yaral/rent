@@ -15,10 +15,12 @@ import com.constants.SystemConstant;
 import com.dao.ImagesDAO;
 import com.dao.HouseDAO;
 import com.dao.RentalDAO;
+import com.dao.UserDAO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.model.House;
 import com.model.Images;
 import com.model.Rental;
+import com.model.User;
 
 @WebServlet(name = "DashboardServlet", urlPatterns = {"/dashboard"})
 @MultipartConfig
@@ -28,6 +30,7 @@ public class DashboardServlet extends HttpServlet {
 	HouseDAO houseDAO = new HouseDAO();
 	RentalDAO rentalDAO = new RentalDAO();
 	ImagesDAO imagesDAO = new ImagesDAO();
+	UserDAO userDAO = new UserDAO();
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -224,6 +227,52 @@ public class DashboardServlet extends HttpServlet {
 			 String result = "{\"houses\":"+houses+",\"availables\":"+availables+"}";
 			 response.getWriter().write(result);				 
 			 				 
+		 }
+		 
+		 if(action.equals("get-images")) {				 
+			 long house_id = Long.parseLong(request.getParameter("house_id"));
+			 List<Images> result = imagesDAO.getAll(house_id);
+			 ObjectMapper objectMapper = new ObjectMapper();
+			 String json = objectMapper.writeValueAsString(result);
+			 response.getWriter().write(json);  			 
+			 
+		 }
+		 
+		 if(action.equals("edit-user")) {
+			 long id = Long.valueOf(request.getParameter("user_id"));
+			 User user = userDAO.findOne(id);
+			 
+			 String name = request.getParameter("name");
+			 String lastname = request.getParameter("lastname");
+			 String email = request.getParameter("email");
+			 String password = request.getParameter("password");
+			 String telephone = "593"+request.getParameter("telephone").substring(1);;
+			 
+			 boolean isSame = user.getEmail().equals(email);
+			 
+			 user.setName(name);
+			 user.setLastName(lastname);
+			 user.setTelephone(telephone);
+			 user.setEmail(email);
+			 user.setPassword(password);
+			 
+			 
+			 if(userDAO.exists(email) != null && !isSame) {
+				 response.getWriter().write("{\"result\": false, \"message\": \"Ya existe un usuario con ese Email\"}");					
+				 return;
+			 }
+			 
+			 try {
+				 if(userDAO.update(user)) {
+					 response.getWriter().write("{\"result\": true, \"message\": \"Usuario actualizado correctamente\"}");										 
+				 }else {
+					 response.getWriter().write("{\"result\": false, \"message\": \"Error al actualizar\"}");										 
+				 }
+			 } catch(Exception e) {
+				 response.getWriter().write("{\"result\": false, \"message\": \"No se han podido actualizar los datos\"}");					
+			 }
+			 
+			 
 		 }
 	 }
 

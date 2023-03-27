@@ -47,11 +47,13 @@ public class RegisterServlet extends HttpServlet {
 			 String lastname = request.getParameter("lastname");
 			 String email = request.getParameter("email");
 			 String password = request.getParameter("password");
+			 String telephone = "593"+request.getParameter("telephone").substring(1);;
 			 
 			 user.setEmail(email);
 			 user.setLastName(lastname);
 			 user.setPassword(password);
 			 user.setName(name);
+			 user.setTelephone(telephone);
 			 
 			 if(userDAO.exists(email) != null) {
 				 response.getWriter().write("{\"result\": false, \"message\": \"Ya existe un usuario con ese Email\"}");					

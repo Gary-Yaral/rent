@@ -143,12 +143,23 @@ function sendData(e) {
 	.then(res => res.json())
 	.then(res => {
 		if(res.result) {
-			alert("Datos añadidos correctamente")
-			form.reset()
-			preview.innerHTML = ""
+			Swal.fire({
+		    icon: "success",
+		    title: "OK",
+		    text: "Datos añadidos correctamente",
+			})
+			.then((result) => {
+			  if (result.isConfirmed || result.isDismissed ) {
+				form.reset()
+				preview.innerHTML = ""		  
+			  }
+			})
+		} else {
+			Swal.fire({
+		    icon: "error",
+		    title: "Oops!",
+		    text: "Error al guardar los datos",
+			})
 		}
 	})
 }
-
-
-

@@ -40,12 +40,7 @@
 			<div class="col-md-6 col-lg-4">
 				<form class="form-login">
 					<h2 class="text-center mb-4">Iniciar Sesión</h2>
-					<div class="form-group">
-						<select name="type">
-						<option value="admin">Administrador</option>
-						<option value="tenant">Usuario</option>
-						</select>
-					</div>
+					<input type="hidden" name="type" value="admin">
 					<div class="form-group">
 						<label for="email">Usuario</label>
 						<input type="email" class="form-control" id="username" name="username" placeholder="Ingrese su usuario" required>
@@ -58,11 +53,11 @@
 						<button type="submit" class="btn btn-primary btn-block">Ingresar</button>
 					</div>
 					<div class="form-group mt-2">
-						<a href="./register" class="btn btn-secondary btn-block">Crear Admin</a>
+						<a href="./register" class="btn btn-secondary btn-block">Registrarse</a>
 					</div>
-					<div class="form-group mt-2">
+					<!--<div class="form-group mt-2">
 						<a href="./register/tenant" class="btn btn-warning btn-block">Crear User</a>
-					</div>
+					</div>-->
 					<sub class="text-danger hidden" id="error">Usuario o contraseña incorrectos</sub>
 				</form>
 			</div>

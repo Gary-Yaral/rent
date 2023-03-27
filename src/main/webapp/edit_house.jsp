@@ -77,7 +77,7 @@
 					<label for="selec-status">Estado</label>
 					<select name="status" id="select-status" required>
 						<option value="DISPONIBLE">DISPONIBLE</option>
-						<option value="NOT DISPONIBLE">NO DISPONIBLE</option>
+						<option value="NO DISPONIBLE">NO DISPONIBLE</option>
 					</select>
 				</div>
 				<div>
@@ -110,7 +110,7 @@
 		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
 		integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
 		crossorigin="anonymous"></script>
-
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 	<!--  /Bootstrap y jQuery -->
 	<script src="../js/file_multiple2.js" type="module"></script>
 </body>

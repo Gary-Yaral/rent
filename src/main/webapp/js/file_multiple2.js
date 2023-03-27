@@ -143,14 +143,25 @@ function sendData(e) {
 	})
 	.then(res => res.json())
 	.then(res => {
-		console.log(res)
 		if(res.result) {
-			alert("Datos editados correctamente")
-			form.reset()
-			preview.innerHTML = ""
-			window.location = "./houses"
+			Swal.fire({
+		    icon: "success",
+		    title: "OK",
+		    text: "Datos editados correctamente",
+			})
+			.then((result) => {
+			  if (result.isConfirmed || result.isDismissed ) {
+				form.reset()
+				preview.innerHTML = ""
+				window.location = "./houses"		  
+			  }
+			})
 		} else {
-			alert("Ha ocurrido un error")
+			Swal.fire({
+		    icon: "error",
+		    title: "Oops!",
+		    text: "Error al actualizar los datos",
+			})
 		}
 	})
 }

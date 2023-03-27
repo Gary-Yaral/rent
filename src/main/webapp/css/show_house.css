@@ -15,12 +15,6 @@
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.empty-house {
-	width: 100%;
-	display: flex;
-	justify-content: center;	
-}
-
 body {
 	width: 100%;
 	display: flex;
@@ -47,7 +41,6 @@ body {
 	border: none;
 	padding: 0;
 	margin-right: 10px;
-	cursor: pointer;
 	order: -1;
 	display: none;
 	color: black;
@@ -107,6 +100,7 @@ body {
 
 .content {
 	width: 100%;
+	margin-top: var(--nav-height);
 }
 
 .content-title {
@@ -176,7 +170,6 @@ footer {
 	right: 1rem;
 	color: white !important;
 	rotate: 45deg;
-	cursor: pointer;
 }
 
 .price-text {
@@ -203,18 +196,6 @@ select {
   width: 100%;
 }
 
-.fa-whatsapp {
-	position: absolute;
-	font-size: 2rem;
-	color: #00d900;
-	bottom: 1rem;
-	right: 1rem;
-}
-
-.fa-whatsapp:hover {
-	color: #0080ff;
-}
-
 .slider div {
   margin: 0 auto;
   text-align: center;
@@ -227,7 +208,7 @@ select {
 
 .carousel-item img{
 	width: 100%;
-	aspect-ratio: 1/1;
+	aspect-ratio: 1/.6;
 	object-fit: cover;
 	border-top-left-radius: 5px; 
 	border-bottom-left-radius: 5px; 
@@ -235,20 +216,15 @@ select {
 
 .card-grid {
 	display: grid;
-	grid-template-columns: 270px 1fr;
+	grid-template-columns: 1fr;
 	padding: 0;
 	max-width: 800px;
-	cursor: pointer;
 }
 
 .container-cards {
 	width: 100%;
 	display: flex;
 	justify-content: center;
-}
-
-.card-grid:hover {
-	box-shadow: 0 0 5px 2px #c0c0c0;
 }
 
 .row {
@@ -273,37 +249,19 @@ select {
 	color: gray;
 }
 
+.header-page, h4 {
+	color: #0080c0;
+}
+
 .card-items {
 	display:flex;
 	gap: 1rem;
+	margin-bottom: 2rem;
 }
 
-@media screen and (max-width: 1000px) {
-	.card-grid {
-		display: grid;
-		grid-template-columns: 290px 1fr;
-		padding: 0;
-		max-width: 800px;
-		cursor: pointer;
-	}
-}
-
-@media screen and (max-width: 780px) {
-	.card-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		padding: 0;
-		max-width: 800px;
-		cursor: pointer;
-	}
-	
-	.carousel-item img{
-	width: 100%;
-	aspect-ratio: 1/.6;
-	object-fit: cover;
-	border-top-left-radius: 5px; 
-	border-bottom-left-radius: 5px; 
-}
+.card {
+	background: transparent;
+	border: none;	
 }
 
 

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.constants.SystemConstant;
 import com.dao.HouseDAO;
+import com.dao.ImagesDAO;
 import com.dao.TenantDAO;
 import com.dao.UserDAO;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,15 +26,28 @@ public class PageServlet extends HttpServlet {
 	UserDAO userDAO = new UserDAO();
 	TenantDAO tenantDAO = new TenantDAO();
 	HouseDAO houseDAO = new HouseDAO();
+	ImagesDAO imagesDAO = new ImagesDAO();
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//String folder = request.getServletContext().getRealPath("/") + "uploads/";
 	    String pathInfo = request.getPathInfo();
+	    String house_id =request.getParameter("house");
 		if(pathInfo == null) {	
 			//sc.cleanFolder(folder);
 			//sc.getFiles(folder);
-			request.getRequestDispatcher("page.jsp").forward(request, response);	    		    	    			
+			if(house_id != null) {				
+				try {
+					long house = Long.parseLong(house_id);
+					String id = String.valueOf(house);
+					request.setAttribute("house", id);
+					request.getRequestDispatcher("./show_house.jsp").forward(request, response);
+				} catch (NumberFormatException e) {
+					request.getRequestDispatcher("./404.jsp").forward(request, response);	   
+				}
+			} else {
+				request.getRequestDispatcher("./page.jsp").forward(request, response);	    		    	    							
+			}    		    	    							
 		} else {
 			request.getRequestDispatcher("../404.jsp").forward(request, response);	    		    	    						
 		}
@@ -55,6 +69,13 @@ public class PageServlet extends HttpServlet {
 			 
 		 }
 
+		 if(action.equals("get_house")) {
+			 long house_id = Long.valueOf(request.getParameter("house_id"));
+			 HouseRender hr =  houseDAO.getOneHouseData(house_id);
+			 ObjectMapper objectMapper = new ObjectMapper();
+			 String json = objectMapper.writeValueAsString(hr);
+			 response.getWriter().write(json);  				 			 
+		 }
 	 }
 
 }

@@ -50,6 +50,10 @@
 						<input type="text" class="form-control" id="lastname" name="lastname" placeholder="Ingrese sus apellidos" required>
 					</div>
 					<div class="form-group">
+						<label for="telephone">Celular</label>
+						<input type="tel" class="form-control" pattern="0[0-9]{9}" id="telephone" name="telephone" placeholder="Whatsapp - 094555545" required>
+					</div>
+					<div class="form-group">
 						<label for="email">Email</label>
 						<input type="email" class="form-control" id="email" name="email" placeholder="Ingrese su email" required>
 					</div>

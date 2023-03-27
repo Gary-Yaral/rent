@@ -27,10 +27,15 @@ public class UserDAO {
         em.getTransaction().commit();
     }
 
-    public void update(User user) {
-        em.getTransaction().begin();
-        em.merge(user);
-        em.getTransaction().commit();
+    public boolean update(User user) {
+    	try {
+    		em.getTransaction().begin();
+    		em.merge(user);
+    		em.getTransaction().commit();
+    		return true;
+    	} catch(Exception e) {
+    		return false;
+    	}
     }
 
     public void delete(User user) {
@@ -39,7 +44,7 @@ public class UserDAO {
         em.getTransaction().commit();
     }
 
-    public User findOne(int userId) {
+    public User findOne(long userId) {
         return em.find(User.class, userId);
     }
     

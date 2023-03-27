@@ -10,6 +10,7 @@
 		response.sendRedirect("../");
 	} else {
 		user = (User) session.getAttribute(sc.getSessionName());
+		String telephone = "0"+user.getTelephone().substring(3);
 		view = (String) request.getAttribute("view");
 %>
 
@@ -47,10 +48,39 @@
 		<div class="options open" id="sidebar">
 			<button class="btn-path goTo" id="/"><i class="fa-solid fa-house"></i><span>Inicio</span></button>
 			<button class="btn-path goTo" id="/houses"><i class="fa-solid fa-list"></i><span>Casas</span></button>
+			<button class="btn-path goTo" id="/edit-user"><i class="fa-solid fa-user"></i><span>Usuario</span></button>
 			<button class="btn-path" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i><span>Salir</span></button>
 		</div>
 		<div class="content">
 			<h3>${page}</h3>
+		<% if(view.equals("user")) { %>
+			<form class="form-edit">
+			<input type="hidden" name="user_id" value="<%=user.getId()%>">
+				<div class="form-group">
+					<label for="name">Nombres</label>
+					<input type="text" value="<%=user.getName() %>" class="form-control" id="username" name="name" placeholder="Ingrese sus nombres" required>
+				</div>
+				<div class="form-group">
+					<label for="lastname">Apellidos</label>
+					<input type="text" value="<%=user.getLastName() %>" class="form-control" id="lastname" name="lastname" placeholder="Ingrese sus apellidos" required>
+				</div>
+				<div class="form-group">
+					<label for="telephone">Celular</label>
+					<input type="tel" value="<%=telephone %>" class="form-control" pattern="0[0-9]{9}" id="telephone" name="telephone" placeholder="Whatsapp - 094555545" required>
+				</div>
+				<div class="form-group">
+					<label for="email">Email</label>
+					<input type="email" value="<%=user.getEmail() %>" class="form-control" id="email" name="email" placeholder="Ingrese su email" required>
+				</div>
+				<div class="form-group">
+					<label for="password">Contraseña</label>
+					<input type="password" class="form-control" id="password" name="password" placeholder="Ingrese su contraseña" required>
+				</div>
+				<div class="form-group mt-2">
+					<button type="submit" class="btn btn-primary btn-block">Guardar Cambios</button>
+				</div>
+			</form>
+		<%} %>
 		<% if(view.equals("home")) { %>
 			<div class="card-container" id="home">
 				<div class="card-1">
@@ -96,22 +126,23 @@
 					</thead>
 					<tbody></tbody>
 				</table>
-				<iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d997.4506137737776!2d-78.4845747!3d-0.1615789!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sec!4v1679770532505!5m2!1ses!2sec" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 			</div>
 		</div>
 	</div>	
 		<%}%>
 		
-	<div class="form-modal" id="all-images">
+	<div class="form-modal hidden" id="all-images">
+		<div class="close" id="close">
+			<div>+</div>
+		</div>
 		<div  class="all-images" id="carousel"></div>		
 	</div>
 	<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-	<script
-		src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-	<script
-		src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-	<script
-		src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+	<script	src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+	<script	src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.min.js" integrity="sha384-heAjqF+bCxXpCWLa6Zhcp4fu20XoNIA98ecBC1YkdXhszjoejr5y9Q77hIrv8R9i" crossorigin="anonymous"></script>
 	<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 	<script src="../js/app.js" type="module"></script>
 </body>

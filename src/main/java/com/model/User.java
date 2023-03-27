@@ -20,8 +20,19 @@ public class User {
 
     @Column(name = "password")
     private String password;
+    
+    @Column(name = "telephone")
+    private String telephone;
 
-    public User() {
+    public String getTelephone() {
+		return telephone;
+	}
+
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
+	}
+
+	public User() {
     }
 
     public User(String name, String lastName, String email, String password) {

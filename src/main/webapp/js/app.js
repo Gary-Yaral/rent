@@ -9,12 +9,24 @@ const PATH_DASHBOARD = '/rent/dashboard/'
 let btnOut = document.querySelector("#btn-logout");
 let home = document.getElementById("home")
 const modal = document.getElementById('all-images')
+const carousel = document.getElementById('carousel')
+const close = document.getElementById('close')
+const formUser = document.querySelector('.form-edit')
 
-if(home) {
-	getDataHome ()
+if(home) { getDataHome() }
+btnOut.onclick = logout;
+if(formUser) formUser.onsubmit = editUser
+
+close.onclick = () => modal.classList.add("hidden")
+hiddeOptions()
+
+function hiddeOptions(){
+	if(window.innerWidth < 780) {
+		sidebar.classList.remove('open');
+	}
 }
 
-btnOut.onclick = logout;
+window.onresize = hiddeOptions
 
 function logout(e) {
 	e.preventDefault();
@@ -167,7 +179,88 @@ function getDataHome () {
 
 function showModal(e) {
 	let houseId = e.target.getAttribute("house")
-	console.log(houseId)
+	modal.classList.remove("hidden")
+	loadImages(houseId)
+}
+
+function loadImages(houseId) {
+	carousel.innerHTML = ""
+	var formData = new FormData()
+	formData.append('action','get-images');
+	formData.append('house_id',houseId);
+	fetch(PATH_DASHBOARD, {
+		method: 'POST',
+		body: formData
+	})
+	.then(res=>res.json())
+	.then(res=>{
+		const urls = res.map(img => img.name)
+		carousel.innerHTML = createCarousel(urls)
+	})
+	
+}
+
+const createCarousel = (urls) => {
+	return `
+		<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+		    <div class="carousel-inner">${generateImgs(urls)}</div>
+		    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+		      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		      <span class="visually-hidden">Anterior</span>
+		    </button>
+		    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+		      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+		      <span class="visually-hidden">Siguiente</span>
+		    </button>
+	  	</div>`
+}
+
+const imgTemplate = (url)  => { return `<div class="carousel-item active">
+	        <img src="../uploads/${url}" class="d-block w-100" alt="${url}">
+	      </div>`}
+
+
+function generateImgs(array) {
+	let imgs = ""
+	array.forEach(img => {
+		imgs += imgTemplate(img)
+	})
+	
+	return imgs
+}
+
+function editUser(e) {
+	e.preventDefault() 
+	var formData = new FormData(formUser)
+	formData.append('action','edit-user');
+	
+	
+	
+	fetch(PATH_DASHBOARD, {
+		method: 'POST',
+		body: formData
+	})
+	.then(res=>res.json())
+	.then(res=>{
+		if(res.result) {
+			Swal.fire({
+			    icon: "success",
+			    title: "OK",
+			    text: "Usuario editado correctamente",
+			})
+			.then((result) => {
+			  if (result.isConfirmed || result.isDismissed ) {
+				window.location = ""		  
+			  }
+			})
+		} else {
+			Swal.fire({
+			    icon: "error",
+			    title: "Oops!",
+			    text: res.message,
+			})
+		}
+	})
 }
 
 

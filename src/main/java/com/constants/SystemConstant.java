@@ -15,6 +15,7 @@ public class SystemConstant {
 		dashboardPaths.put("/houses", new String[]{"../dashboard.jsp", "Casas", "houses"});
 		dashboardPaths.put("/new-house", new String[]{"../new_house.jsp", "Nuevo Registro", ""});
 		dashboardPaths.put("/edit-house", new String[]{"../edit_house.jsp", "Editar", ""});
+		dashboardPaths.put("/edit-user", new String[]{"../dashboard.jsp", "Editar usuario", "user"});
 	}
 	public String getSessionName() {
 		return sessionName;

@@ -38,7 +38,7 @@
 	<main>
 		<div class="d-grid">
 			<form>
-				<h4 class="form-title" id="form-house-title">Editar</h4>
+				<h4 class="form-title" id="form-house-title">Agregar</h4>
 				<input type="hidden" name="user_id" value="<%=user.getId() %>" />
 				<div>
 					<label for="title">Titulo de post</label> 
@@ -107,10 +107,12 @@
 		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
 		integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
 		crossorigin="anonymous"></script>
+		
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 	<!--  /Bootstrap y jQuery -->
 	<script src="../js/file_multiple.js" type="module"></script>
-</body>
+	</body>
 </html>
 
 <%}%>

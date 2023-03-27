@@ -81,8 +81,6 @@ const template = (house, urls, user) => {
 	message += "%0A*Deseo más información sobre su post*%0A"
 	message += house.title 
 	
-	house.phone = "593982055157"
-	
 	if(house.description.length > 100) {
 		description = house.description.slice(0, 97) + "..."
 	} else {

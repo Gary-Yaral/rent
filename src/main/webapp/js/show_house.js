@@ -2,9 +2,19 @@ import { searchCanton, searchProvince } from "./provinces.js"
 const cards = document.querySelector("#cards")
 const house = document.getElementById('house')
 const btnBusinnes = document.getElementById('bussines')
+const body = document.querySelector('body')
 const PATH = "./page";
+const whatsApi = (phone, data) =>`https://api.whatsapp.com/send?phone=${phone}&text=${data}`;
 
 btnBusinnes.onclick = () => window.location = PATH
+
+body.onclick = (e) => {
+	const isWhats =e.target.classList.contains("fa-whatsapp")
+	if(isWhats) {
+		redirectTo(e)
+	}
+}
+
 
 
 const formData = new FormData()
@@ -42,12 +52,32 @@ function generateImgs(array) {
 	
 	return imgs
 }
+
+function redirectTo(e) {
+	
+	if(e.target.classList.contains("fa-whatsapp")) {
+		const phone = e.target.getAttribute("phone")
+		const message = e.target.getAttribute("message")
+		window.location = whatsApi(phone, message)
+		
+	} else {
+		let uri = `${PATH}?house=${house}`
+		window.location = uri		
+	}
+}
+
+
 const template = (house, urls, user) => {
 	let province = searchProvince(house.province)
 	province = toCapitalize(province)	
 	let canton = searchCanton(house.province, house.canton)
 	canton = toCapitalize(canton)	
 	let description = ""
+	
+	let message = "%0A*Asunto*%0A"
+	message += "%0A*Deseo más información sobre su post*%0A"
+	message += house.title 
+	
 	description = house.description
 	return `
 	<div class="card card-grid">
@@ -85,7 +115,7 @@ const template = (house, urls, user) => {
 	    	<h4><strong>Detalles</strong></h4>
 	    	${description}
 	    </p>
-	    <i class="fa-brands fa-whatsapp"></i>
+	    <i class="fa-brands fa-whatsapp" phone="${user.telephone}" message="${message}"></i>
 	    <div class="card-user">Publicado por: ${user.name} ${user.lastName}</div>
 	  </div>
 	</div>`

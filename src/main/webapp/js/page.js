@@ -40,7 +40,6 @@ function loadHouses() {
 	})
 	.then(res=> res.json())
 	.then(json=> {
-		console.log(json)
 		cards.innerHTML = ""
 		
 		if(json.length === 0) {

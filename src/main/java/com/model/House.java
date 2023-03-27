@@ -28,14 +28,6 @@ public class House {
 		this.id = id;
 	}
 
-	public String getPhoto() {
-		return photo;
-	}
-
-	public void setPhoto(String photo) {
-		this.photo = photo;
-	}
-
 	public String getAddress() {
 		return address;
 	}
@@ -76,11 +68,73 @@ public class House {
 		this.user = user;
 	}
 
-	@Column(name = "photo")
-    private String photo;
-
     @Column(name = "address")
     private String address;
+    public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getCanton() {
+		return canton;
+	}
+
+	public void setCanton(String canton) {
+		this.canton = canton;
+	}
+
+	public String getRooms() {
+		return rooms;
+	}
+
+	public void setRooms(String rooms) {
+		this.rooms = rooms;
+	}
+
+	public String getBathrooms() {
+		return bathrooms;
+	}
+
+	public void setBathrooms(String bathrooms) {
+		this.bathrooms = bathrooms;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
+    public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
+	@Column(name = "title")
+	private String title;
+	
+	@Column(name = "province")
+    private String province;
+    
+    @Column(name = "canton")
+    private String canton;
+    
+    @Column(name = "rooms")
+    private String rooms;
+    
+    @Column(name = "bathrooms")
+    private String bathrooms;
+    
+    @Column(name = "area")
+    private String area;
 
     @Column(name = "price")
     private Double price;

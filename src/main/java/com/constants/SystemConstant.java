@@ -13,7 +13,8 @@ public class SystemConstant {
 	public SystemConstant() {
 		dashboardPaths.put("/", new String[]{"../dashboard.jsp", "Inicio", "home"});
 		dashboardPaths.put("/houses", new String[]{"../dashboard.jsp", "Casas", "houses"});
-		dashboardPaths.put("/rental", new String[]{"../dashboard.jsp", "Rentas", "rental"});
+		dashboardPaths.put("/new-house", new String[]{"../new_house.jsp", "Nuevo Registro", ""});
+		dashboardPaths.put("/edit-house", new String[]{"../edit_house.jsp", "Editar", ""});
 	}
 	public String getSessionName() {
 		return sessionName;
@@ -71,6 +72,25 @@ public class SystemConstant {
 	    } else {
 	        System.out.println("La carpeta no existe.");
 	    }
+    }
+    
+    public void deleteImages(String path,long house_id) {
+    	File folder = new File(path);
+    	
+    	if (folder.exists()) {
+    		File[] archivos = folder.listFiles();
+    		
+    		for (File file : archivos) {
+    			String[] split = file.getName().split("-");
+    			boolean mustDelete = split[1].equals(String.valueOf(house_id));    			
+    			if(mustDelete) {
+    				file.delete();    				
+    				System.out.println("Se elimino: "+ file.getName());
+    			}
+    		}
+    	} else {
+    		System.out.println("La carpeta no existe.");
+    	}
     }
 
 }

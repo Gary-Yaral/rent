@@ -1,7 +1,15 @@
-<%if(session.getAttribute("user-session") != null) {
-   response.sendRedirect("./dashboard/");
-  }	 
+<%@page import="com.constants.SystemConstant"%>
+<%
+	SystemConstant sc = new SystemConstant();
+	if(session.getAttribute(sc.getSessionTenantName()) != null) {
+	   response.sendRedirect("./page");
+	  }	 
+	
+	if(session.getAttribute(sc.getSessionName()) != null) {
+		response.sendRedirect("./dashboard/");
+	}	
 %>
+
 
 <!DOCTYPE html>
 <html>

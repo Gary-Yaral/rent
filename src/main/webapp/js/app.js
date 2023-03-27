@@ -1,22 +1,38 @@
-import { validateAdd, validateEdit, deleteHouse } from "./houseActions.js"
-import { loadInput } from "./inputLoader.js"
-import { loadRentalTable } from "./rental.js"
+//import { loadRentalTable } from "./rental.js"
+import { searchCanton, searchProvince } from "./provinces.js"
 
 const hamburgerBtn = document.querySelector('.hamburger');
 const sidebar = document.querySelector('.options');
-const formModal = document.querySelector('#form-modal')
 const body = document.querySelector("body")
-const img = document.getElementById("preview")
-const select = document.querySelector("#select-status")
-const formTitle =  document.querySelector("#form-house-title")
+const user = document.querySelector("#user")
 const PATH_DASHBOARD = '/rent/dashboard/'
-const form = formModal.querySelector("form")
+let btnOut = document.querySelector("#btn-logout");
+let home = document.getElementById("home")
+const modal = document.getElementById('all-images')
 
-loadInput(img) // Esto controla lo que se carga o no en el input file de agregar casa
-loadRentalTable(form, PATH_DASHBOARD) 
+if(home) {
+	getDataHome ()
+}
+
+btnOut.onclick = logout;
+
+function logout(e) {
+	e.preventDefault();
+	const formData = new FormData();
+	formData.append("action", "logout");
+	fetch("/rent/users/user", {
+		method: "POST",
+		body: formData
+	}).then(res => res.json())
+	.then(res => {
+		if(res.logout) {window.location = "/rent/"}
+	})
+}
+
 hamburgerBtn.addEventListener('click', () => {
   sidebar.classList.toggle('open');
 })
+
 $(document).ready(function () {
 	loadHousesTable()
 });
@@ -25,54 +41,25 @@ body.onclick = function(e) {
 	
 	const element = e.target
 	const {classList} = element
-	const isBtnClose = classList.contains("btn-close")
-	const isModal = classList.contains("form-modal")
-	const isAddHouse = classList.contains("add-house")
-	const isNewHouse = classList.contains("new-house")
 	const isOptPane = classList.contains("goTo")
-	const isBtnEdit = classList.contains("btn-edit")
 	const isBtnDelete = classList.contains("btn-delete")
-	
-	if(isNewHouse) {
-		form.classList.remove("form-edit")
-		form.classList.add("form-save")
-		formTitle.innerHTML = "Agregar"
-		createOption(["Disponible"], select)
-		formModal.classList.remove("modal-hidden")
-	}
-	
-	if(isBtnClose || isModal) {
-		resetForm()
-	}
-	
-	if(isAddHouse) {
-		if(form.classList.contains("form-edit")) {
-			editHouse(e)			
-		}
-		
-		if(form.classList.contains("form-save")){			
-			saveHouse(e)
-		}
-	}
+	const isOut = e.target.id === "btn-logout"
+	const isBtnShow = classList.contains("show-images")
 	
 	if(isOptPane) {
 		window.location = PATH_DASHBOARD + e.target.id.split("/")[1]
 	}
 	
-	if(isBtnDelete) {
-		let id = e.target.getAttribute("house")
-		deleteHouse(id, PATH_DASHBOARD, loadHousesTable)
+	if(isOut) {
+		logout(e)
 	}
 	
-	if(isBtnEdit) {
-		let id = e.target.getAttribute("house") 
-		createOption(["Disponible", "Alquilado"], select)
-		loadHouse(form, id)
-		formTitle.innerHTML = "Editar"
-		form.classList.add("form-edit")
-		form.classList.remove("form-save")
-		form.house_id.value = id
-		formModal.classList.remove("modal-hidden")
+	if(isBtnShow) {
+		showModal(e)
+	}
+	
+	if(isBtnDelete) {
+		deleteHouse(e)
 	}
 }
 
@@ -82,10 +69,9 @@ function loadHousesTable() {
 	if(!houseTable) return
 	
 	// Si la tabla existe entonces se crea todo
-	let id = form.user_id.value
 	var formData = new FormData()
 	formData.append('action','load-houses');
-	formData.append('user_id',id);
+	formData.append('user_id',user.value);
 	fetch(PATH_DASHBOARD, {
 		method: "POST",
 		body: formData
@@ -94,14 +80,12 @@ function loadHousesTable() {
 	.then(json => {	
 		var btns = (id) => {return `
 			<div>
-				<button class="btn btn-primary btn-edit" house="${id}">Editar</button>	
+				<a href="./edit-house?house=${id}" class="btn btn-primary btn-edit" house="${id}">Editar</a>	
 				<button class="btn btn-danger btn-delete" house="${id}">Eliminar</button>	
 			</div>
 		`}
 		
-		var img = (path) => {return `
-			<img src="../uploads/${path}" class="img-house" />
-		 `}
+		const img = (id)=>`<button class="btn btn-secondary show-images" house="${id}">Ver</button>`
 		const opt = {
 				responsive:true,
 				bDestroy: true
@@ -111,9 +95,14 @@ function loadHousesTable() {
 			var dataTable = json.map((house, index) => {
 		    	return [
 					index + 1, 
-					img(house.photo),
+					img(house.id),
+					searchProvince(house.province), 
+					searchCanton(house.province, house.canton), 
 					house.address, 
 					house.price, 
+					house.bathrooms, 
+					house.rooms, 
+					house.area, 
 					house.description, 
 					house.status,
 					btns(house.id)
@@ -127,58 +116,12 @@ function loadHousesTable() {
 	
 }
 
-function saveHouse(e) {
-	e.preventDefault()
-	const validator = validateAdd(form)
-	if(!validator.isValid) {
-		Swal.fire({
-		    icon: 'warning',
-		    title: 'Atención',
-		    html: validator.error,
-		})
-		return
-	}
-	var formData = new FormData(form)
-	formData.append('action','save-house');
-	fetch(PATH_DASHBOARD, {
-		method: 'POST',
-		body: formData
-	})
-	.then(res=>res.json())
-	.then(json=>{
-		if(json.result) {
-			Swal.fire({
-			    icon: "success",
-			    title: 'OK',
-			    text: json.message,
-			})
-			resetForm()
-			loadHousesTable()		
-		} else {
-			Swal.fire({
-			    icon: "error",
-			    title: 'OK',
-			    text: json.message,
-			})
-		}
-	})
-}
+function deleteHouse(e) {
+	const house_id = e.target.getAttribute("house")
 
-function editHouse(e) {
-	e.preventDefault()
-	const validator = validateEdit(form)
-	if(!validator.isValid) {
-		Swal.fire({
-		    icon: 'warning',
-		    title: 'Atención',
-		    html: validator.error,
-		})
-		return
-	}
-
-	var formData = new FormData(form)
-	formData.append('action','edit-house');
-	formData.append('house_id',form.house_id.value);
+	var formData = new FormData()
+	formData.append('action','delete-house');
+	formData.append('house_id',house_id);
 	fetch(PATH_DASHBOARD, {
 		method: 'POST',
 		body: formData
@@ -206,45 +149,25 @@ function editHouse(e) {
 	})
 }
 
-
-function createOption(data, parent) {
-	parent.innerHTML = ""
-	data.forEach(value => {
-		const option = document.createElement("option")		
-		option.value = value
-		option.innerHTML = value
-		parent.appendChild(option)
-	})
-}
-
-function loadHouse(form, id) {
-	let formData = new FormData()
-	formData.append("action","get-house");
-	formData.append("house_id", id );
+function getDataHome () {
+	var formData = new FormData()
+	formData.append('action','get-home-data');
+	formData.append('user_id',user.value);
 	fetch(PATH_DASHBOARD, {
-		method: "POST",
+		method: 'POST',
 		body: formData
 	})
-	.then(res=> res.json())
-	.then(json=> {
-		if(json.error) {
-			alert(json.error)
-			return
-		}
-		
-		const img = form.querySelector("img")
-		img.src = "../uploads/" + json.photo 
-		form.price.value = json.price
-		form.address.value = json.address
-		form.description.value = json.description
-		form.status.value = json.status		
+	.then(res=>res.json())
+	.then(res=>{
+		document.getElementById("houses-total").innerHTML = res.houses
+		document.getElementById("availables").innerHTML = res.availables
 	})
 }
 
-function resetForm(){
-	formModal.classList.add("modal-hidden")
-	form.reset()
-	img.src=""
+
+function showModal(e) {
+	let houseId = e.target.getAttribute("house")
+	console.log(houseId)
 }
 
 

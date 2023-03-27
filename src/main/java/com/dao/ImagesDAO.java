@@ -10,68 +10,28 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import com.jpa.util.JPAUtil;
-import com.model.House;
-import com.model.HouseRender;
 import com.model.Images;
 import com.model.User;
 
-public class HouseDAO {
+public class ImagesDAO {
 	private static EntityManager em;
 
-    public HouseDAO() {
+    public ImagesDAO() {
         EntityManagerFactory emf = JPAUtil.getEntityManagerFactory();
         em = emf.createEntityManager();
 
     }
-    
-	@SuppressWarnings("unchecked")
-	public List<House> getAllHousesByUserId(String userId) {
-		List<House> list = new ArrayList<House>();
-		Long userIdLong = Long.parseLong(userId);
-		try {
-	        em.getTransaction().begin();
-	        Query query = em.createQuery("SELECT h FROM House h WHERE h.user.id = :userId");
-	        query.setParameter("userId", userIdLong);
-	        list = query.getResultList();
-	        em.getTransaction().commit();
-	        return list;
-	    } catch (Exception e) {
-	        em.getTransaction().rollback();
-	    }
-		return list;
-	}
 	
-	public List<HouseRender> getAll() {
-		List<HouseRender> data = new ArrayList<HouseRender>();
-		List<House> list = new ArrayList<House>();
-		
+	public List<Images> getAll() {
+		List<Images> list = new ArrayList<Images>();
 		try {
-			TypedQuery<House> query = em.createQuery("SELECT h FROM House h", House.class);
-			list = query.getResultList();	
-			for(House house : list) {
-				List<String> urls = new ArrayList<String>();
-				HouseRender hr = new HouseRender();				
-				// Consultamos sus imagenes
-				TypedQuery<Images> q = em.createQuery("SELECT i FROM Images i WHERE i.house.id = :houseId", Images.class);
-				q.setParameter("houseId", house.getId());
-				List<Images> images = q.getResultList();
-				for(Images img: images) {
-					urls.add(img.getName());
-				}
-				
-				User user = house.getUser();				
-				hr.setUser(user);
-				hr.setHouse(house);
-				hr.setUrls(urls);
-				data.add(hr);
-			}
-			
+			TypedQuery<Images> query = em.createQuery("SELECT h FROM House h", Images.class);
+			list = query.getResultList();			
 		} catch(Exception e) {
 			System.out.println("Error al obtener todas las casas");
 		}
 		
-		return data;
-		
+		return list;
 	}
 	
 	public String getNextIndex() {
@@ -89,15 +49,16 @@ public class HouseDAO {
 		}		
 	}
 	
-	public House add(House house) {
-		House result = new House();
+	public boolean add(Images images) {
+	    boolean result = true;
 	    EntityTransaction transaction = em.getTransaction();
 	    try {
 	        transaction.begin();
-	        em.persist(house);
-	        result = house;
+	        em.persist(images);
 	        transaction.commit();
 	    } catch (Exception e) {
+	        result = false;
+	        System.out.print(e);
 	        if (transaction.isActive()) {
 	            transaction.rollback();
 	        }
@@ -117,10 +78,10 @@ public class HouseDAO {
 		return user;
 	}
 	
-	public House findOne(long id) {
-		House house = null;
+	public Images findOne(long id) {
+		Images house = null;
 		try {
-			house = em.find(House.class, id);			
+			house = em.find(Images.class, id);			
 		} catch(Exception e) {
 			System.out.println("No existe esta casa");
 		}
@@ -128,7 +89,7 @@ public class HouseDAO {
 		return house;
 	}
 	
-	public boolean update(House house) {
+	public boolean update(Images house) {
 	    EntityTransaction transaction = em.getTransaction();
 	    boolean result = true;
 	    try {
@@ -146,7 +107,7 @@ public class HouseDAO {
 	}
 	
 	public boolean remove(Long id) {
-		House house = em.find(House.class, id);
+		Images house = em.find(Images.class, id);
 		
 		if (house == null) return false;
 		
@@ -161,13 +122,14 @@ public class HouseDAO {
 	    return true;
 	}
 	
-	public long countAvailable(Long id) {
-		TypedQuery<Long> query = em.createQuery("SELECT COUNT(h) FROM House h WHERE h.status = 'DISPONIBLE' AND h.user.id = :userId", Long.class);
-		query.setParameter("userId", id);
-		Long count = query.getSingleResult();
-		return count;
-
+	public void removeAll(Long house_id) {
+		TypedQuery<Images> query = em.createQuery("SELECT img FROM Images img WHERE img.house.id = :houseId", Images.class);
+		query.setParameter("houseId", house_id);
+		List<Images> imagesToDelete = query.getResultList();
+		em.getTransaction().begin();
+		for (Images image : imagesToDelete) {
+		    em.remove(image);
+		}
+		em.getTransaction().commit();
 	}
-	
-	
 }

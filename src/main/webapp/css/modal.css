@@ -10,12 +10,10 @@
 	justify-content: center;
 }
 
-
 .form-modal form  {
 	width: 100%;
-	max-width: 400px;
-	display: flex;
-	flex-direction: column;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
 	background: white;
 	height: fit-content;
 	gap: 1rem;
@@ -23,6 +21,12 @@
 	box-sizing: border-box;
 	margin: 2rem;
 	position: relative;
+}
+
+.form-modal form div {
+	width: 100%;
+	display: flex; 
+	flex-direction: column;
 }
 
 .form-modal form input, 

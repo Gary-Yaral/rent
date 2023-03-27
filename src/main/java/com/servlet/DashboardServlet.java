@@ -1,8 +1,7 @@
 package com.servlet;
-
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -13,10 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 import com.constants.SystemConstant;
+import com.dao.ImagesDAO;
 import com.dao.HouseDAO;
 import com.dao.RentalDAO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.model.House;
+import com.model.Images;
 import com.model.Rental;
 
 @WebServlet(name = "DashboardServlet", urlPatterns = {"/dashboard"})
@@ -26,11 +27,13 @@ public class DashboardServlet extends HttpServlet {
 	SystemConstant sc = new SystemConstant();
 	HouseDAO houseDAO = new HouseDAO();
 	RentalDAO rentalDAO = new RentalDAO();
+	ImagesDAO imagesDAO = new ImagesDAO();
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    String pathInfo = request.getPathInfo();
 	    String[] path = sc.searchPath(pathInfo);
+	    String house = request.getParameter("house");
 	    
 	    if (pathInfo == null) {
 	    	response.sendRedirect("./");
@@ -40,6 +43,7 @@ public class DashboardServlet extends HttpServlet {
 	    if(path != null) {
 	    	request.setAttribute("page", path[1]);
 	    	request.setAttribute("view", path[2]);
+	    	request.setAttribute("house", house);
 	    	request.getRequestDispatcher(path[0]).forward(request, response);	    	
 	    } else {
 	    	request.getRequestDispatcher("../404.jsp").forward(request, response);	    	
@@ -79,104 +83,125 @@ public class DashboardServlet extends HttpServlet {
 		 
 		 if(action.equals("save-house")) {
 			 House house = new House();
-			 String nextIndex = houseDAO.getNextIndex();
-			 Part filePart = request.getPart("image");
-			 String fileName = filePart.getSubmittedFileName();
-			 
-			 String price = request.getParameter("price");
-			 String address = request.getParameter("address");
-			 String description = request.getParameter("description");
-			 String status = request.getParameter("status");
 			 long user_id = Long.parseLong(request.getParameter("user_id"));
-			 String image = "image-" + nextIndex + ".jpg";
+			 List<Part> fileParts = request.getParts().stream().filter(part -> "images[]".equals(part.getName())).collect(Collectors.toList());
+			 ImagesDAO imagesDAO = new ImagesDAO(); 
+		
+			 String title = request.getParameter("title");
+			 String province = request.getParameter("province");
+			 String canton = request.getParameter("canton");
+			 String address = request.getParameter("address");
+			 String price = request.getParameter("price");
+			 String bathrooms = request.getParameter("bathrooms");
+			 String rooms = request.getParameter("rooms");
+			 String area = request.getParameter("area");
+			 String status = request.getParameter("status");
+			 String description = request.getParameter("description");
 			 
+			 
+			 house.setTitle(title);
+			 house.setProvince(province);
+			 house.setCanton(canton);
 			 house.setAddress(address);
-			 house.setDescription(description);
 			 house.setPrice(Double.valueOf(price));
+			 house.setArea(area);
+			 house.setRooms(rooms);
+			 house.setBathrooms(bathrooms);
 			 house.setStatus(status);
-			 house.setPhoto(image);
+			 house.setDescription(description);
 			 house.setUser(houseDAO.findUser(user_id));
-			 String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
-			 
-			 if (!extension.equalsIgnoreCase("jpg") &&
-			     !extension.equalsIgnoreCase("jpeg") &&
-			     !extension.equalsIgnoreCase("png")) {
-			     response.getWriter().write("{\"result\": false, \"message\": \"Solo se permiten JPG, JPEG y PNG\"}");
-			     return;
-			 }
-			
-			try {
-				String imagePath = folder + image;
-				filePart.write(imagePath);
-				//sc.getFiles(folder);
-				if(houseDAO.add(house)) {
-					response.getWriter().write("{\"result\": true, \"message\": \"Casa guardada correctamente\"}");
-					return;	
-				} else {
-					response.getWriter().write("{\"result\": false, \"message\": \"Error al guardar los datos\"}");					
+			 House result = houseDAO.add(house);
+			 if(result != null) {
+				int counter = 0;
+				try {
+					for (Part filePart : fileParts) {
+						Images img = new Images();
+						counter++;
+						String fileName = "img-" + result.getId() + "-" + counter+".jpg";
+						img.setName(fileName);
+						img.setHouse(result);				
+						String path = folder + fileName;
+						filePart.write(path);
+						imagesDAO.add(img);
+					}
+				response.getWriter().write("{\"result\": true, \"message\": \"Casa guardada correctamente\"}");
+				} catch(Exception e) {
+					response.getWriter().write("{\"result\": false, \"message\": \"Error al guardar los datos\"}");									 
 				}
-				return;				
-			} catch(Exception e) {
-				response.getWriter().write("{\"result\": false, \"message\": \"Error al guardar la imagen\"}");
-			}
+				
+			 } else {
+				response.getWriter().write("{\"result\": false, \"message\": \"Error al guardar los datos\"}");					
+			 }			
 		 }
 		 
 		 if(action.equals("edit-house")) {
 			 long house_id = Long.parseLong(request.getParameter("house_id"));
 			 House house = houseDAO.findOne(house_id);
-			 
-			 Part filePart = request.getPart("image");
-			 if(filePart != null && filePart.getSize() > 0) {
-				 String fileName = filePart.getSubmittedFileName();
-				 String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
-				 if (!extension.equalsIgnoreCase("jpg") &&
-						 !extension.equalsIgnoreCase("jpeg") &&
-						 !extension.equalsIgnoreCase("png")) {
-					 response.getWriter().write("{\"result\": false, \"message\": \"Solo se permiten JPG, JPEG y PNG\"}");
-					 return;
-				 }	
-				 
-				 try {
-					 String imagePath = folder + house.getPhoto();
-					 filePart.write(imagePath);
-				 } catch(Exception e) {
-					 response.getWriter().write("{\"result\": false, \"message\": \"No se ha podido actualizar la imagen\"}");
-					 return;
-				 }
-			 }
-			 		 
-			 String price = request.getParameter("price");
+			 List<Part> fileParts = request.getParts().stream().filter(part -> "images[]".equals(part.getName())).collect(Collectors.toList());
+			 ImagesDAO imagesDAO = new ImagesDAO(); 
+		
+			 String title = request.getParameter("title");
+			 String province = request.getParameter("province");
+			 String canton = request.getParameter("canton");
 			 String address = request.getParameter("address");
-			 String description = request.getParameter("description");
+			 String price = request.getParameter("price");
+			 String bathrooms = request.getParameter("bathrooms");
+			 String rooms = request.getParameter("rooms");
+			 String area = request.getParameter("area");
 			 String status = request.getParameter("status");
+			 String description = request.getParameter("description");
 			 
+			 
+			 house.setTitle(title);
+			 house.setProvince(province);
+			 house.setCanton(canton);
 			 house.setAddress(address);
-			 house.setDescription(description);
 			 house.setPrice(Double.valueOf(price));
-			 house.setStatus(status);			 
-			
+			 house.setArea(area);
+			 house.setRooms(rooms);
+			 house.setBathrooms(bathrooms);
+			 house.setStatus(status);
+			 house.setDescription(description);
+			 //System.out.println(house.getUser().getPassword());
 			 if(houseDAO.update(house)) {
-				response.getWriter().write("{\"result\": true, \"message\": \"Casa actualizada correctamente\"}");
-				return;	
-			} else {
-				response.getWriter().write("{\"result\": false, \"message\": \"No se han podido actualizar los datos de la casa\"}");					
-			}
+				 //System.out.println("hay "+ fileParts.size());
+				 //System.out.println(fileParts.get(0).getSize());
+				 if(fileParts.get(0).getSize() > 0) {
+					 sc.deleteImages(folder, house.getId());
+					 imagesDAO.removeAll(house.getId());
+					 int counter = 0;
+					 try {
+						 for (Part filePart : fileParts) {
+							 Images img = new Images();
+							 counter++;
+							 String fileName = "img-" + house.getId() + "-" + counter+".jpg";
+							 img.setName(fileName);
+							 img.setHouse(house);				
+							 String path = folder + fileName;
+							 filePart.write(path);
+							 imagesDAO.add(img);
+						 }
+						 
+						 response.getWriter().write("{\"result\": true, \"message\": \"Casa guardada correctamente\"}");
+						 
+					 } catch(Exception e) {
+						 response.getWriter().write("{\"result\": false, \"message\": \"Error al actualizar las imagenes\"}");									 
+					 }					 
+				 } else {
+					 response.getWriter().write("{\"result\": true, \"message\": \"Casa guardada correctamente\"}");					 
+				 }
+				 
+			 }
 		 }
 		 
 		 if(action.equals("delete-house")) {
 			 long house_id = Long.parseLong(request.getParameter("house_id"));
-			 House house = houseDAO.findOne(house_id);
-			 String img = house.getPhoto();
-			 File file = new File(folder + img);
-			 if(file.delete()) {
-				 if(houseDAO.remove(house_id)) {
-					 response.getWriter().write("{\"delete\": true }");				 
-				 } else {
-					 response.getWriter().write("{\"delete\": false }");				 
-				 }				 
+			 if(houseDAO.remove(house_id)) {
+				 sc.deleteImages(folder,house_id);
+				 response.getWriter().write("{\"result\": true }");				 
 			 } else {
-				 response.getWriter().write("{\"delete\": false }");
-			 }
+				 response.getWriter().write("{\"result\": false }");				 
+			 }	
 		 }
 		 
 		 if(action.equals("get-house")) {				 
@@ -189,6 +214,16 @@ public class DashboardServlet extends HttpServlet {
 			 } else {
 				 response.getWriter().write("{\"error\": \"No existe esa casa\"}");				 
 			 }
+		 }
+		 
+		 if(action.equals("get-home-data")) {				 
+			 long user_id = Long.parseLong(request.getParameter("user_id"));
+			 String id = request.getParameter("user_id");
+			 long availables = houseDAO.countAvailable(user_id);
+			 int houses = houseDAO.getAllHousesByUserId(id).size();
+			 String result = "{\"houses\":"+houses+",\"availables\":"+availables+"}";
+			 response.getWriter().write(result);				 
+			 				 
 		 }
 	 }
 

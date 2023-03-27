@@ -26,7 +26,7 @@ public class Rental {
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "house_id", referencedColumnName = "id")
-    private House house;
+    private Images house;
 
     @ManyToOne
     @JsonBackReference
@@ -35,7 +35,7 @@ public class Rental {
 
     public Rental() {}
 
-    public Rental(Integer rentalTime, Float payment, Timestamp currentDate, House house, Tenant tenant) {
+    public Rental(Integer rentalTime, Float payment, Timestamp currentDate, Images house, Tenant tenant) {
         this.rentalTime = rentalTime;
         this.payment = payment;
         this.currentDate = currentDate;
@@ -76,11 +76,11 @@ public class Rental {
         this.currentDate = currentDate;
     }
 
-    public House getHouse() {
+    public Images getHouse() {
         return house;
     }
 
-    public void setHouse(House house) {
+    public void setHouse(Images house) {
         this.house = house;
     }
 

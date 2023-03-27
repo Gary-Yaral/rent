@@ -15,7 +15,7 @@ import com.dao.HouseDAO;
 import com.dao.TenantDAO;
 import com.dao.UserDAO;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.model.House;
+import com.model.HouseRender;
 
 @WebServlet(name = "PageServlet", urlPatterns = {"/page"})
 @MultipartConfig
@@ -28,8 +28,11 @@ public class PageServlet extends HttpServlet {
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//String folder = request.getServletContext().getRealPath("/") + "uploads/";
 	    String pathInfo = request.getPathInfo();
-		if(pathInfo == null) {			
+		if(pathInfo == null) {	
+			//sc.cleanFolder(folder);
+			//sc.getFiles(folder);
 			request.getRequestDispatcher("page.jsp").forward(request, response);	    		    	    			
 		} else {
 			request.getRequestDispatcher("../404.jsp").forward(request, response);	    		    	    						
@@ -41,13 +44,13 @@ public class PageServlet extends HttpServlet {
 	            throws ServletException, IOException {
 		 String action = request.getParameter("action");
 		 if(action.equals("get_all_houses")) {
-			 List<House> list = houseDAO.getAll();
+			 List<HouseRender> list = houseDAO.getAll();
 			 if(list != null) {
 				 ObjectMapper objectMapper = new ObjectMapper();
 				 String json = objectMapper.writeValueAsString(list);
 				 response.getWriter().write(json);  				 
 			 } else {
-				 response.getWriter().write("{\"error\": \"No existe esa casa\"}");				 
+				 response.getWriter().write("[]");				 
 			 }
 			 
 		 }

@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 import com.constants.SystemConstant;
@@ -263,8 +264,10 @@ public class DashboardServlet extends HttpServlet {
 			 }
 			 
 			 try {
-				 if(userDAO.update(user)) {
-					 response.getWriter().write("{\"result\": true, \"message\": \"Usuario actualizado correctamente\"}");										 
+				 if(userDAO.update(user)) {       		        		
+        			HttpSession session = request.getSession();
+        			session.setAttribute(sc.getSessionName(), user);       	       		
+					response.getWriter().write("{\"result\": true, \"message\": \"Usuario actualizado correctamente\"}");										 
 				 }else {
 					 response.getWriter().write("{\"result\": false, \"message\": \"Error al actualizar\"}");										 
 				 }

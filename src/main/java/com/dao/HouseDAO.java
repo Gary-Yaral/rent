@@ -26,6 +26,7 @@ public class HouseDAO {
     
 	@SuppressWarnings("unchecked")
 	public List<House> getAllHousesByUserId(String userId) {
+		em.clear();
 		List<House> list = new ArrayList<House>();
 		Long userIdLong = Long.parseLong(userId);
 		try {
@@ -44,7 +45,7 @@ public class HouseDAO {
 	public List<HouseRender> getAll() {
 		List<HouseRender> data = new ArrayList<HouseRender>();
 		List<House> list = new ArrayList<House>();
-		
+		em.clear();
 		try {
 			TypedQuery<House> query = em.createQuery("SELECT h FROM House h WHERE h.status = :status", House.class);
 			query.setParameter("status", "DISPONIBLE");
@@ -56,6 +57,7 @@ public class HouseDAO {
 				TypedQuery<User> userQuery = em.createQuery("SELECT u FROM User u WHERE u.id = :user_id", User.class);
 				userQuery.setParameter("user_id", user_id);
 				User user  = userQuery.getSingleResult();
+				//System.out.println(user.getLastName());
 				
 				// Consultamos sus imagenes
 				TypedQuery<Images> q = em.createQuery("SELECT i FROM Images i WHERE i.house.id = :houseId", Images.class);
@@ -80,6 +82,7 @@ public class HouseDAO {
 	}
 	
 	public HouseRender getOneHouseData(long house_id) {
+		em.clear();
 		HouseRender data = new HouseRender();		
 		try {
 			TypedQuery<House> query = em.createQuery("SELECT h FROM House h WHERE h.id = :house_id", House.class);
@@ -107,6 +110,7 @@ public class HouseDAO {
 	}
 	
 	public String getNextIndex() {
+		em.clear();
 		if(getAll().size() == 0) {
 			return "1";
 		}
@@ -122,6 +126,7 @@ public class HouseDAO {
 	}
 	
 	public House add(House house) {
+		em.clear();
 		House result = new House();
 	    EntityTransaction transaction = em.getTransaction();
 	    try {
@@ -139,6 +144,7 @@ public class HouseDAO {
 	}
 	
 	public User findUser(long id) {
+		em.clear();
 		User user = null;
 		try {
 			user = em.find(User.class, id);			
@@ -150,6 +156,7 @@ public class HouseDAO {
 	}
 	
 	public House findOne(long id) {
+		em.clear();
 		House house = null;
 		try {
 			house = em.find(House.class, id);			
@@ -161,6 +168,7 @@ public class HouseDAO {
 	}
 	
 	public boolean update(House house) {
+		em.clear();
 	    EntityTransaction transaction = em.getTransaction();
 	    boolean result = true;
 	    try {
@@ -178,6 +186,7 @@ public class HouseDAO {
 	}
 	
 	public boolean remove(Long id) {
+		em.clear();
 		House house = em.find(House.class, id);
 		
 		if (house == null) return false;
@@ -194,6 +203,7 @@ public class HouseDAO {
 	}
 	
 	public long countAvailable(Long id) {
+		em.clear();
 		TypedQuery<Long> query = em.createQuery("SELECT COUNT(h) FROM House h WHERE h.status = 'DISPONIBLE' AND h.user.id = :userId", Long.class);
 		query.setParameter("userId", id);
 		Long count = query.getSingleResult();

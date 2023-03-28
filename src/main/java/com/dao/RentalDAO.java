@@ -23,6 +23,7 @@ public class RentalDAO {
     
 	@SuppressWarnings("unchecked")
 	public List<Rental> getAllByUserId(String userId) {
+		em.clear();
 		List<Rental> list = new ArrayList<Rental>();
 		Long userIdLong = Long.parseLong(userId);
 		try {
@@ -40,6 +41,7 @@ public class RentalDAO {
 	}
 	
 	public boolean add(Rental rental) {
+		em.clear();
 	    boolean result = true;
 	    EntityTransaction transaction = em.getTransaction();
 	    try {
@@ -57,6 +59,7 @@ public class RentalDAO {
 	}
 	
 	public Rental findOne(long id) {
+		em.clear();
 		Rental rental = null;
 		try {
 			rental = em.find(Rental.class, id);			
@@ -68,6 +71,7 @@ public class RentalDAO {
 	}
 	
 	public boolean update(Rental rental) {
+		em.clear();
 	    EntityTransaction transaction = em.getTransaction();
 	    boolean result = true;
 	    try {
@@ -85,6 +89,7 @@ public class RentalDAO {
 	}
 	
 	public boolean remove(Long id) {
+		em.clear();
 		Rental rental = em.find(Rental.class, id);
 		
 		if (rental == null) return false;

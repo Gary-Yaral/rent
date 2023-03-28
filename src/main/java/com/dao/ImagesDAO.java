@@ -21,6 +21,7 @@ public class ImagesDAO {
     }
 	
 	public List<Images> getAll(long house_id) {
+		em.clear();
 		List<Images> list = new ArrayList<Images>();
 		try {
 			TypedQuery<Images> query = em.createQuery("SELECT img FROM Images img WHERE img.house.id = :houseId", Images.class);
@@ -34,6 +35,7 @@ public class ImagesDAO {
 	}
 	
 	public boolean add(Images images) {
+		em.clear();
 	    boolean result = true;
 	    EntityTransaction transaction = em.getTransaction();
 	    try {
@@ -52,6 +54,7 @@ public class ImagesDAO {
 	}
 	
 	public void removeAll(Long house_id) {
+		em.clear();
 		TypedQuery<Images> query = em.createQuery("SELECT img FROM Images img WHERE img.house.id = :houseId", Images.class);
 		query.setParameter("houseId", house_id);
 		List<Images> imagesToDelete = query.getResultList();

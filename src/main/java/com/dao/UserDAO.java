@@ -22,12 +22,14 @@ public class UserDAO {
     }
 
     public void add(User user) {
+    	em.clear();
         em.getTransaction().begin();
         em.persist(user);
         em.getTransaction().commit();
     }
 
     public boolean update(User user) {
+    	em.clear();
     	try {
     		em.getTransaction().begin();
     		em.merge(user);
@@ -39,16 +41,19 @@ public class UserDAO {
     }
 
     public void delete(User user) {
+    	em.clear();
         em.getTransaction().begin();
         em.remove(user);
         em.getTransaction().commit();
     }
 
     public User findOne(long userId) {
+    	em.clear();
         return em.find(User.class, userId);
     }
     
     public User exists(String email) {
+    	em.clear();
         Query query = em.createQuery("SELECT u FROM User u WHERE u.email = :email");
         query.setParameter("email", email);
         try {
@@ -59,6 +64,7 @@ public class UserDAO {
     }
 
     public User findUserByEmailAndPassword(String email, String password) {
+    	em.clear();
         Query query = em.createQuery("SELECT u FROM User u WHERE u.email = :email AND u.password = :password");
         query.setParameter("email", email);
         query.setParameter("password", password);
@@ -71,6 +77,7 @@ public class UserDAO {
 
     
     public List<User> getAll() {
+    	em.clear();
         return em.createQuery("SELECT u FROM User u", User.class).getResultList();
     }
 }

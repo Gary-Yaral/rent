@@ -41,7 +41,6 @@ function loadHouses() {
 	.then(res=> res.json())
 	.then(json=> {
 		cards.innerHTML = ""
-		
 		if(json.length === 0) {
 			cards.innerHTML = templateEmpty
 		} else {

@@ -90,8 +90,9 @@ body {
 	position: absolute;
 	font-size: 4rem;
 	color: #00d900;
-	bottom: 1rem;
+	top: 2.5rem;
 	right: 1rem;
+	cursor: pointer;
 }
 
 .fa-whatsapp:hover {

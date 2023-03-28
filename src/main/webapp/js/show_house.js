@@ -95,8 +95,12 @@ const template = (house, urls, user) => {
 	  </div>
 	  <div class="card-body">
 	    <h5 class="card-title">${house.title}</h5>
-	    <p class="card-text price-text">$${house.price}</p>
+	    <p class="card-text price-text">$${house.price}</p>	    
 	    <p class="card-text">${province}, ${canton}</p>
+	    <p class="card-text"></p>
+	    <p class="card-text"><strong>Dirección</strong></p>
+	    <p class="card-text">- ${house.address}</p>
+	    <p class="card-text"></p>
 	    <div class="card-items">
 	    	<div>
 	    		<i class="fa-solid fa-bed"></i>
@@ -116,6 +120,7 @@ const template = (house, urls, user) => {
 	    	${description}
 	    </p>
 	    <i class="fa-brands fa-whatsapp" phone="${user.telephone}" message="${message}"></i>
+	    <p class="card-text"></p>
 	    <div class="card-user">Publicado por: ${user.name} ${user.lastName}</div>
 	  </div>
 	</div>`

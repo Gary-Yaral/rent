@@ -51,7 +51,12 @@ public class HouseDAO {
 			list = query.getResultList();	
 			for(House house : list) {
 				List<String> urls = new ArrayList<String>();
-				HouseRender hr = new HouseRender();				
+				HouseRender hr = new HouseRender();	
+				long user_id = house.getUser().getId();
+				TypedQuery<User> userQuery = em.createQuery("SELECT u FROM User u WHERE u.id = :user_id", User.class);
+				userQuery.setParameter("user_id", user_id);
+				User user  = userQuery.getSingleResult();
+				
 				// Consultamos sus imagenes
 				TypedQuery<Images> q = em.createQuery("SELECT i FROM Images i WHERE i.house.id = :houseId", Images.class);
 				q.setParameter("houseId", house.getId());
@@ -59,8 +64,7 @@ public class HouseDAO {
 				for(Images img: images) {
 					urls.add(img.getName());
 				}
-				
-				User user = house.getUser();				
+					
 				hr.setUser(user);
 				hr.setHouse(house);
 				hr.setUrls(urls);

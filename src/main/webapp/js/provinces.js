@@ -2639,26 +2639,41 @@ const provinces = {
 }
 
 export const codeProvinces = Object.keys(provinces)
-export const provincesData = codeProvinces.map(code => {
+/*export const provincesData = codeProvinces.map(code => {
 	return {
 		code,
 		province: provinces[code]["provincia"]		
 	}
-})
+})*/
 
+export const provincesData = [
+		{
+			code: "12",
+			province: provinces["12"].provincia
+		}
+	]
+	
 export function searchCantones(codeProvince) {
 	if(!codeProvince || codeProvince === "") {
 		return []
 	}
 	
-	let cantones = provinces[codeProvince]["cantones"]
-	let cantonesCode = Object.keys(cantones)
+	//let cantones = provinces[codeProvince]["cantones"]
+	//let cantonesCode = Object.keys(cantones)
+	
+	return [
+		{
+			code: "1201",
+			canton: provinces[codeProvince]["cantones"]["1201"].canton
+		}
+	]
+	/*
 	return cantonesCode.map(code => {
 		return {
 			code, 
 			canton: cantones[code].canton,
 		}
-	})
+	})*/
 }
 
 export function searchProvince(codeProvince) {
